@@ -476,4 +476,63 @@ Now, you also have a **backup & recovery plan** to ensure your setup remains sec
 CREATE INDEX idx_query ON query_logs(query);
 ```
 
+# Use Redis for caching frequent queries in DeepSeek, follow these steps:
+### 1. Install Redis on Ubuntu Server
+
+```bash
+sudo apt update && sudo apt install redis -y
+sudo systemctl enable redis --now
+```
+
+### 2. Install Redis Python Library
+
+```bash
+pip install redis
+```
+
+### 3. Modify DeepSeek to Use Redis for Caching
+
+* Edit /opt/deepseek/server.py and update the request processing logic to include caching.
+a. Connect to Redis
+
+```python
+import redis
+import hashlib
+import json
+
+# Connect to Redis
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+```
+
+b. Cache Query Responses
+
+* Modify the function that processes user queries:
+
+```python
+def process_query(user_query):
+# Generate a hash key for the query
+query_key = hashlib.sha256(user_query.encode()).hexdigest()
+
+# Check if the query response is cached
+cached_response = redis_client.get(query_key)
+if cached_response:
+   return json.loads(cached_response)  # Return cached response
+
+# If not cached, generate response using DeepSeek
+model_response = generate_response(user_query)
+
+# Store response in Redis with an expiration time (e.g., 24 hours)
+redis_client.setex(query_key, 86400, json.dumps(model_response))
+
+return model_response
+```
+
+### 4. Test Redis Caching
+
+* Run the script and check if responses are cached.
+  
+```bash
+redis-cli KEYS *
+```
+
 
