@@ -448,3 +448,32 @@ Your database connections are now modularized in `db_connection.py` and `store_r
 
 Now, you also have a **backup & recovery plan** to ensure your setup remains secure and recoverable, along with automated upload to **Digital Ocean Spaces**. 🔄☁️
 
+# Optimize DeepSeek LLM based on data, you can follow these steps:
+
+### 1. **Enable Query Logging & Analysis**
+
+* Ensure that all user queries and model responses are stored in MariaDB.
+* Use SQL queries to analyze trends (e.g., most common queries, response times).
+
+### 2. **Fine-Tune the Model**
+
+* Collect frequently asked queries and their responses.
+* Train a smaller fine-tuned model using **LoRA (Low-Rank Adaptation)** or **QLoRA** to reduce GPU memory usage.
+
+### 3. **Cache Frequent Queries**
+
+* Implement a caching layer (e.g., **Redis**) to store responses for common queries, reducing inference load.
+
+### 4. **Optimize GPU Usage**
+
+* Enable **TensorRT** or **bitsandbytes** for better performance.
+* Use **model quantization** to reduce memory footprint.
+
+### 5. **Database Indexing for Faster Query Analysis**
+
+* Add indexes on frequently queried columns in MariaDB:
+```sql
+CREATE INDEX idx_query ON query_logs(query);
+```
+
+
