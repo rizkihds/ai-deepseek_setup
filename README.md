@@ -1,3 +1,42 @@
+# Setting Up Proxmox for Ubuntu Server
+
+Proxmox is a virtualization platform that allows you to create and manage virtual machines (VMs). If you want to run Ubuntu Server on Proxmox, follow these steps:
+
+### Install Proxmox
+
+1. Download the **Proxmox VE ISO** from [Proxmox official site](https://www.proxmox.com/en/downloads).
+2. Create a bootable USB using `balenaEtcher` or `Rufus`.
+3. Boot from the USB and install Proxmox on your machine.
+4. Follow the installation wizard and configure the network settings.
+
+### Create an Ubuntu Server VM
+
+1. Log in to the **Proxmox Web Interface** (`https://your-proxmox-ip:8006`).
+2. Click **Create VM** and enter a VM name.
+3. Choose **Ubuntu Server ISO** under the CD/DVD drive (upload it via **Proxmox ISO Storage**).
+4. Set **CPU Cores** (4+ recommended) and **Memory** (32GB+ recommended).
+5. Allocate **Disk Storage** (100GB+ SSD recommended).
+6. Configure **Network** (use `virtio` for best performance).
+7. Start the VM and proceed with the **Ubuntu Server installation**.
+
+### Install Ubuntu Server Inside Proxmox VM
+
+Once the VM is running, follow these steps:
+
+1. Boot the VM using the **Ubuntu Server ISO**.
+2. Follow the installation process and set up the **username, password, and network settings**.
+3. Once installed, update the system:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+4. Install **QEMU Guest Agent** for better VM integration:
+   ```bash
+   sudo apt install qemu-guest-agent -y
+   systemctl enable qemu-guest-agent --now
+   ```
+
+Now your Ubuntu Server is running inside Proxmox, ready for **DeepSeek LLM installation**.
+
 # DeepSeek LLM Self-Hosting on Ubuntu Server
 
 ## 1. Hardware Requirements
