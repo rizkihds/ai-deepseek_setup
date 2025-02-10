@@ -1,4 +1,4 @@
-# System FLOW
+# DeepSeek - System FLOW
 ```
 System Setup - Flow
      │
@@ -44,7 +44,7 @@ System Setup - Flow
 
 ```
 
-# DeepSeek Data Storage Locations
+# DeepSeek Data Storage & Locations
 
 * **Installation Directory:**`/home/ubuntu/deepseek/`
 * **Model Weights & Checkpoints** (if downloaded via Hugging Face):
@@ -394,4 +394,11 @@ System Setup
 ```
 
 With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** inside **Proxmox**, with **Oobabooga Web UI** for easy interaction. 🚀
+With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** with **Oobabooga Web UI** for easy interaction. 🚀
+
+Additionally, you can store and analyze model interactions by connecting DeepSeek to your database, including **MariaDB**. 🔍📊
+
+Your database connections are now modularized in `db_connection.py` and `store_response.py`, making it easier to manage and secure credentials.
+
+Now, you also have a **backup & recovery plan** to ensure your setup remains secure and recoverable, along with automated upload to **Digital Ocean Spaces**. 🔄☁️
 
