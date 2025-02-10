@@ -1,4 +1,6 @@
-#System Setup - Flow
+# System FLOW
+```
+System Setup - Flow
      │
      ├──► Install Proxmox
      │       ├──► Create Ubuntu VM
@@ -40,7 +42,7 @@
              ├──► Optimize Model Based on Data
              └──► Retrieve Stored Logs for Review
 
-
+```
 # Setting Up Proxmox for Ubuntu Server
 
 Proxmox is a virtualization platform that allows you to create and manage virtual machines (VMs). If you want to run Ubuntu Server on Proxmox, follow these steps:
