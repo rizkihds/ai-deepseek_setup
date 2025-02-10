@@ -536,4 +536,129 @@ return model_response
 redis-cli KEYS *
 ```
 
+# Fine-Tuning DeepSeek LLM with LoRA & QLoRA 🔍🚀
+
+## Introduction
+Fine-tuning large language models like DeepSeek LLM can be resource-intensive. To optimize memory usage and computational efficiency, **LoRA (Low-Rank Adaptation)** and **QLoRA (Quantized LoRA)** techniques allow fine-tuning with reduced GPU memory requirements.
+
+## 1. Understanding LoRA & QLoRA
+
+### LoRA (Low-Rank Adaptation)
+- LoRA introduces **trainable low-rank matrices** that are injected into the model's layers, reducing the number of parameters to update.
+- This method enables efficient fine-tuning without modifying the entire model.
+- LoRA updates only a small subset of model parameters, making training faster and more memory-efficient.
+
+### QLoRA (Quantized LoRA)
+- QLoRA **quantizes** the model (e.g., 4-bit precision) to drastically lower memory usage while preserving performance.
+- Uses **NF4 (NormalFloat4) quantization** combined with LoRA adapters.
+- Reduces VRAM consumption, making fine-tuning possible on consumer-grade GPUs.
+- Maintains nearly full model performance while significantly reducing computational requirements.
+
+### Comparison of LoRA vs. QLoRA
+| Feature          | LoRA | QLoRA |
+|-----------------|------|-------|
+| Memory Usage    | Medium | Low (4-bit quantization) |
+| Performance     | High | Nearly Full |
+| VRAM Requirement | Moderate | Low (Consumer GPUs) |
+| Fine-Tuning Speed | Fast | Faster |
+| Parameter Updates | Low-rank adapters | Quantized + Low-rank adapters |
+
+## 2. Preparing the Environment
+
+### Install Dependencies
+```bash
+pip install torch transformers peft bitsandbytes datasets accelerate
+```
+
+### Set Up GPU & CUDA
+Ensure CUDA and `bitsandbytes` support for **4-bit quantization**:
+```bash
+pip show bitsandbytes
+```
+
+## 3. Fine-Tuning Process
+
+### Load Pretrained Model with QLoRA
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import LoraConfig, get_peft_model
+import torch
+
+model_name = "deepseek-llm"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True,
+)
+
+model = AutoModelForCausalLM.from_pretrained(model_name, quantization_config=bnb_config, device_map="auto")
+```
+
+### Configure QLoRA Adapters
+```python
+config = LoraConfig(
+    r=16, 
+    lora_alpha=32, 
+    target_modules=["q_proj", "v_proj"], 
+    lora_dropout=0.05, 
+    bias="none"
+)
+model = get_peft_model(model, config)
+```
+
+### Apply LoRA Fine-Tuning
+```python
+from peft import prepare_model_for_int8_training
+model = prepare_model_for_int8_training(model)
+```
+
+### Prepare Dataset
+```python
+from datasets import load_dataset
+dataset = load_dataset("your_dataset")
+```
+
+### Training with QLoRA
+```python
+from transformers import TrainingArguments, Trainer
+
+training_args = TrainingArguments(
+    output_dir="./results",
+    per_device_train_batch_size=4,
+    save_steps=500,
+    save_total_limit=2,
+    logging_dir="./logs",
+    evaluation_strategy="steps",
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=dataset["train"],
+    eval_dataset=dataset["test"],
+)
+
+trainer.train()
+```
+
+## 4. Saving & Loading the Fine-Tuned Model
+```python
+model.save_pretrained("./fine_tuned_deepseek")
+tokenizer.save_pretrained("./fine_tuned_deepseek")
+```
+
+## 5. Deploying the Fine-Tuned Model
+Use the fine-tuned model for inference:
+```python
+from transformers import pipeline
+pipe = pipeline("text-generation", model="./fine_tuned_deepseek", tokenizer="./fine_tuned_deepseek")
+print(pipe("Hello, how are you?"))
+```
+
+## Conclusion
+Using LoRA and QLoRA, DeepSeek LLM can be fine-tuned efficiently on consumer GPUs, reducing hardware constraints while achieving high-quality outputs.
+
 
