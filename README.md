@@ -7,51 +7,7 @@
 - **Storage**: 100GB+ SSD (for model weights & dependencies)
 - **CPU**: Multi-core (for better inference performance)
 
-## 2. Setting Up Proxmox for Ubuntu Server
-
-Proxmox is a virtualization platform that allows you to create and manage virtual machines (VMs). If you want to run Ubuntu Server on Proxmox, follow these steps:
-
-### Install Proxmox
-
-1. Download the **Proxmox VE ISO** from [Proxmox official site](https://www.proxmox.com/en/downloads).
-2. Create a bootable USB using `balenaEtcher` or `Rufus`.
-3. Boot from the USB and install Proxmox on your machine.
-4. Follow the installation wizard and configure the network settings.
-
-### Create an Ubuntu Server VM
-
-1. Log in to the **Proxmox Web Interface** (`https://your-proxmox-ip:8006`).
-2. Click **Create VM** and enter a VM name.
-3. Choose **Ubuntu Server ISO** under the CD/DVD drive (upload it via **Proxmox ISO Storage**).
-4. Set **CPU Cores** (4+ recommended) and **Memory** (32GB+ recommended).
-5. Allocate **Disk Storage** (100GB+ SSD recommended).
-6. Configure **Network** (use `virtio` for best performance).
-7. Start the VM and proceed with the **Ubuntu Server installation**.
-
-### Install Ubuntu Server Inside Proxmox VM
-
-Once the VM is running, follow these steps:
-
-1. Boot the VM using the **Ubuntu Server ISO**.
-
-2. Follow the installation process and set up the **username, password, and network settings**.
-
-3. Once installed, update the system:
-
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   ```
-
-4. Install **QEMU Guest Agent** for better VM integration:
-
-   ```bash
-   sudo apt install qemu-guest-agent -y
-   systemctl enable qemu-guest-agent --now
-   ```
-
-Now your Ubuntu Server is running inside Proxmox, ready for **DeepSeek LLM installation**.
-
-## 3. System Preparation (Ubuntu Server)
+## 2. System Preparation (Ubuntu Server)
 
 ### Update & Install Essential Packages
 
@@ -83,7 +39,7 @@ sudo apt install tmux
 - Detach session: `Ctrl+B, D`
 - Reattach session: `tmux attach -t deepseek`
 
-## 4. Software Setup
+## 3. Software Setup
 
 ### Install Python 3.8+
 
@@ -106,13 +62,121 @@ sudo apt install cuda -y
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
 
-## 5. DeepSeek LLM Installation & Setup
+## 4. DeepSeek LLM Installation & Setup
 
-### Clone DeepSeek Repository
+### Set Up Installation Directory
 
 ```bash
-git clone https://github.com/DeepSeek-LM/DeepSeek-LLM.git /opt/deepseek
-cd /opt/deepseek
+mkdir -p /home/ubuntu/deepseek
+cd /home/ubuntu/deepseek
+```
+
+### Download DeepSeek Model
+
+- Visit: [Hugging Face](https://huggingface.co/deepseek-ai)
+- Download the model files and place them in the `models/` directory:
+
+```bash
+mkdir -p /home/ubuntu/deepseek/models
+cd /home/ubuntu/deepseek/models
+# Download model weights manually or use huggingface-cli
+```
+
+### Install Additional Dependencies
+
+```bash
+pip install transformers accelerate sentencepiece
+```
+
+### Run DeepSeek Model with Python (Standalone Test)
+
+```bash
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-llm")
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-llm")
+
+input_text = "Hello, how are you?"
+inputs = tokenizer(input_text, return_tensors="pt")
+outputs = model.generate(**inputs)
+print(tokenizer.decode(outputs[0]))
+```
+
+### DeepSeek Data Storage Locations
+
+- **Installation Directory:** `/home/ubuntu/deepseek/`
+- **Model Weights & Checkpoints** (if downloaded via Hugging Face):
+  ```bash
+  ~/.cache/huggingface/hub/
+  ```
+- **Oobabooga Web UI Model Directory:**
+  ```bash
+  text-generation-webui/models/
+  ```
+- **Temporary Cache & Logs:**
+  ```bash
+  ~/.cache/huggingface/
+  ~/.cache/torch/
+  ```
+- **Custom Model Path:** If specified manually, models will be stored in the chosen directory.
+
+## 5. Connecting DeepSeek to a Database for Analytics
+
+### Install Database Connector
+
+- **PostgreSQL:**
+  ```bash
+  pip install psycopg2
+  ```
+- **MySQL/MariaDB:**
+  ```bash
+  pip install mysql-connector-python
+  ```
+- **MongoDB:**
+  ```bash
+  pip install pymongo
+  ```
+
+### Store Model Responses in MariaDB
+
+Create a new script file:
+
+#### **File Name: ****\`\`****)**
+
+```python
+import mysql.connector
+
+def connect_db():
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="your_user",
+        password="your_password",
+        database="your_db"
+    )
+    return conn
+```
+
+#### **File Name: ****\`\`****)**
+
+```python
+from db_connection import connect_db
+
+def store_response(user_input, model_response):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO analytics (user_input, model_response) VALUES (%s, %s)", (user_input, model_response))
+    conn.commit()
+    cursor.close()
+    conn.close()
+```
+
+## 6. Oobabooga Web UI Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/oobabooga/text-generation-webui.git
+cd text-generation-webui
 ```
 
 ### Install Dependencies
@@ -121,85 +185,57 @@ cd /opt/deepseek
 pip install -r requirements.txt
 ```
 
-### Run DeepSeek LLM
+### Run Oobabooga Web UI with DeepSeek
 
 ```bash
 python server.py --model deepseek-llm
 ```
 
-## 6. Backup & Recovery Plan
+## 7. Backup & Upload to Digital Ocean Spaces
 
-### Setting Up Backup with `rclone`
+### Backup Model Files, Database, and Configurations
 
-1. Install `rclone`:
+```bash
+tar -czvf deepseek_backup_$(date +%F).tar.gz /home/ubuntu/deepseek/ ~/.cache/huggingface/hub/ text-generation-webui/models/ ~/deepseek_db_backup.sql
+```
 
-   ```bash
-   curl https://rclone.org/install.sh | sudo bash
-   ```
+### Setup & Configure s3cmd for Digital Ocean Spaces
 
-2. Configure `rclone` for Digital Ocean:
+```bash
+sudo apt install s3cmd
+s3cmd --configure
+```
 
-   ```bash
-   rclone config
-   ```
+Follow the prompts and enter your Digital Ocean Spaces Access & Secret keys.
 
-   - Choose **New remote**
-   - Enter a name (e.g., `do_spaces`)
-   - Select `s3` as the storage type
-   - Set provider to `Digital Ocean`
-   - Enter Access Key and Secret Key
-   - Set region (`nyc3` or your region)
-   - Save configuration
+### Upload Backup to Digital Ocean Spaces using s3cmd
 
-3. Sync files to Digital Ocean:
+```bash
+s3cmd put deepseek_backup_$(date +%F).tar.gz s3://your-bucket-name/
+```
 
-   ```bash
-   rclone sync /opt/deepseek do_spaces:your-bucket-name/deepseek-backup
-   ```
+### Setup & Configure rclone for Digital Ocean Spaces
 
-## 7. Database Storage & Analytics
+```bash
+sudo apt install rclone
+rclone config
+```
 
-DeepSeek LLM can connect to a database for storing logs, queries, and responses for analytics.
+Follow the prompts to add a new remote for Digital Ocean Spaces, choosing **S3-compatible storage** and entering your credentials.
 
-### Configuring MariaDB Connection
+### Upload Backup to Digital Ocean Spaces using rclone
 
-1. Install MariaDB:
+```bash
+rclone copy deepseek_backup_$(date +%F).tar.gz your-remote-name:your-bucket-name
+```
 
-   ```bash
-   sudo apt install mariadb-server -y
-   sudo systemctl enable mariadb --now
-   ```
+## 8. Conclusion
 
-2. Secure MariaDB installation:
-
-   ```bash
-   sudo mysql_secure_installation
-   ```
-
-3. Create a database for DeepSeek:
-
-   ```sql
-   CREATE DATABASE deepseek_db;
-   CREATE USER 'deepseek_user'@'localhost' IDENTIFIED BY 'yourpassword';
-   GRANT ALL PRIVILEGES ON deepseek_db.* TO 'deepseek_user'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-4. Configure DeepSeek to use the database:
-
-   - Edit `/opt/deepseek/config/db_connection.py`
-   - Update the database connection settings:
-
-   ```python
-   DB_HOST = 'localhost'
-   DB_USER = 'deepseek_user'
-   DB_PASSWORD = 'yourpassword'
-   DB_NAME = 'deepseek_db'
-   ```
-
-With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** inside **Proxmox**, with **Oobabooga Web UI** for easy interaction. 🚀
+With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** with **Oobabooga Web UI** for easy interaction. 🚀
 
 Additionally, you can store and analyze model interactions by connecting DeepSeek to your database, including **MariaDB**. 🔍📊
 
-Now, you also have a **backup & recovery plan** to ensure your setup remains secure and recoverable, with automated uploads to **Digital Ocean Spaces** using `rclone`. 🔄☁️
+Your database connections are now modularized in `db_connection.py` and `store_response.py`, making it easier to manage and secure credentials.
+
+Now, you also have a **backup & recovery plan** to ensure your setup remains secure and recoverable, along with automated upload to **Digital Ocean Spaces**. 🔄☁️
 
