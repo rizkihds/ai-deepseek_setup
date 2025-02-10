@@ -1,3 +1,46 @@
+#System Setup - Flow
+     │
+     ├──► Install Proxmox
+     │       ├──► Create Ubuntu VM
+     │       ├──► Install Ubuntu Server
+     │       └──► Configure System (Updates, Drivers, tmux)
+     │
+     ├──► Install Required Software
+     │       ├──► Python, CUDA, PyTorch
+     │       ├──► NVIDIA Drivers (if GPU)
+     │       └──► MariaDB (for logging & analytics)
+     │
+     ├──► DeepSeek LLM Installation
+     │       ├──► Clone Repository
+     │       ├──► Install Dependencies
+     │       └──► Start DeepSeek LLM Server
+     │
+     ├──► Oobabooga Web UI Setup
+     │       ├──► Install Web UI
+     │       ├──► Connect to DeepSeek LLM
+     │       └──► Serve Web UI for User Interaction
+     │
+     ├──► Request Processing Flow
+     │       ├──► User Sends Request (Web UI)
+     │       ├──► DeepSeek LLM Processes Query
+     │       ├──► (Optional) Log Request to MariaDB
+     │       ├──► Generate Response
+     │       └──► Send Response Back to User
+     │
+     ├──► Backup & Recovery
+     │       ├──► Install & Configure `rclone`
+     │       ├──► Connect to Digital Ocean Spaces
+     │       ├──► Sync Model & Data (`/opt/deepseek`)
+     │       ├──► Verify Backup
+     │       └──► Restore from Backup (if needed)
+     │
+     └──► Analytics & Database Storage
+             ├──► Store User Queries in MariaDB
+             ├──► Analyze Query Trends
+             ├──► Optimize Model Based on Data
+             └──► Retrieve Stored Logs for Review
+
+
 # Setting Up Proxmox for Ubuntu Server
 
 Proxmox is a virtualization platform that allows you to create and manage virtual machines (VMs). If you want to run Ubuntu Server on Proxmox, follow these steps:
