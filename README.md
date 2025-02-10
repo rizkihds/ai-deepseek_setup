@@ -256,6 +256,27 @@ def store_response(user_input, model_response):
 
 ## 6. Oobabooga Web UI Installation
 
+```
+Client Request
+     │
+     ▼
+Oobabooga Web UI
+     │
+     ▼
+DeepSeek LLM Server
+     │
+     ├──► (Optional) Log request to MariaDB
+     │
+     ▼
+Generate Response
+     │
+     ▼
+Oobabooga Web UI
+     │
+     ▼
+Client Receives Response
+```
+
 ### Clone Repository
 
 ```bash
@@ -276,6 +297,31 @@ python server.py --model deepseek-llm
 ```
 
 ## 7. Backup & Upload to Digital Ocean Spaces
+
+```
+Backup Process
+     │
+     ▼
+Install & Configure rclone
+     │
+     ▼
+Setup Digital Ocean Spaces
+     │
+     ▼
+Authenticate & Configure rclone
+     │
+     ▼
+Select Backup Directory (/opt/deepseek)
+     │
+     ▼
+Initiate Backup with rclone sync
+     │
+     ▼
+Data Uploaded to Digital Ocean Spaces
+     │
+     ▼
+Verify Backup Integrity
+```
 
 ### Backup Model Files, Database, and Configurations
 
