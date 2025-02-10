@@ -448,8 +448,8 @@ Your database connections are now modularized in `db_connection.py` and `store_r
 
 Now, you also have a **backup & recovery plan** to ensure your setup remains secure and recoverable, along with automated upload to **Digital Ocean Spaces**. 🔄☁️
 
-# Optimize DeepSeek LLM based on data, you can follow these steps:
-
+# Optimize DeepSeek LLM based on Data📊
+* follow these steps
 ### 1. **Enable Query Logging & Analysis**
 
 * Ensure that all user queries and model responses are stored in MariaDB.
@@ -476,7 +476,8 @@ Now, you also have a **backup & recovery plan** to ensure your setup remains sec
 CREATE INDEX idx_query ON query_logs(query);
 ```
 
-# Use Redis for caching frequent queries in DeepSeek, follow these steps:
+# Use Redis for caching frequent queries in DeepSeek 🔍:
+* follow these steps
 ### 1. Install Redis on Ubuntu Server
 
 ```bash
