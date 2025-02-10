@@ -1,4 +1,4 @@
-# DeepSeek - System FLOW
+# DeepSeek - System FLOW 🚀
 ```
 System Setup - Flow
      │
@@ -44,7 +44,7 @@ System Setup - Flow
 
 ```
 
-# DeepSeek Data Storage & Locations
+# DeepSeek Data Storage & Locations  🔍
 
 * **Installation Directory:**`/home/ubuntu/deepseek/`
 * **Model Weights & Checkpoints** (if downloaded via Hugging Face):
@@ -63,7 +63,7 @@ System Setup - Flow
 * **Custom Model Path:** If specified manually, models will be stored in the chosen directory.
 
 
-# DeepSeek LLM Self-Hosting on Ubuntu Server
+# DeepSeek LLM Self-Hosting on Ubuntu Server Inside Proxmox 🚀
 
 ## 1. Hardware Requirements
 
@@ -394,7 +394,6 @@ System Setup
 ```
 
 With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** inside **Proxmox**, with **Oobabooga Web UI** for easy interaction. 🚀
-With these steps, you now have DeepSeek LLM running on your **Ubuntu Server** with **Oobabooga Web UI** for easy interaction. 🚀
 
 Additionally, you can store and analyze model interactions by connecting DeepSeek to your database, including **MariaDB**. 🔍📊
 
