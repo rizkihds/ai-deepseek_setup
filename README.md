@@ -369,7 +369,54 @@ def store_response(user_input, model_response):
    DB_PASSWORD = 'yourpassword'
    DB_NAME = 'deepseek_db'
    ```
+5. Log Queries to MariaDB
+   * Modify /opt/deepseek/server.py to log incoming queries.
+     ```python
+     import mysql.connector
+     import datetime
+     
+     def log_query(user_query, model_response):
+         conn = mysql.connector.connect(
+             host="localhost",
+             user="deepseek_user",
+             password="yourpassword",
+             database="deepseek_db"
+         )
+         cursor = conn.cursor()
+    
+         query = "INSERT INTO query_logs (timestamp, query, response) VALUES (%s, %s, %s)"
+         values = (datetime.datetime.now(), user_query, model_response)
+         
+         cursor.execute(query, values)
+         conn.commit()
+         conn.close()
+     
+     # Call log_query(user_query, model_response) inside the request handler
+     ```
+   * Create a Table for Logging
+     Run the following SQL command in MariaDB:
+     
+     ```sql
+     CREATE TABLE query_logs (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         timestamp DATETIME,
+         query TEXT,
+         response TEXT
+     );
+     ```
+   * Analyze Trends Using SQL
+     - To analyze query trends:
 
+     ```sql
+     SELECT query, COUNT(*) AS count FROM query_logs GROUP BY query ORDER BY count DESC LIMIT 10;
+     ```
+     - Query Trends Over Time
+
+     ```sql
+     SELECT DATE(timestamp) AS date, COUNT(*) AS query_count 
+     FROM query_logs GROUP BY date ORDER BY date DESC;
+     ```
+   
 ## 9. Full Process Overview
 
 ```
