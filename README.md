@@ -256,6 +256,7 @@ def store_response(user_input, model_response):
 
 ## 6. Oobabooga Web UI Installation
 
+### User Interaction Flow
 ```
 Client Request
      │
@@ -298,6 +299,7 @@ python server.py --model deepseek-llm
 
 ## 7. Backup & Upload to Digital Ocean Spaces
 
+### Backup Flow
 ```
 Backup Process
      │
