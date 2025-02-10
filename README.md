@@ -658,7 +658,46 @@ pipe = pipeline("text-generation", model="./fine_tuned_deepseek", tokenizer="./f
 print(pipe("Hello, how are you?"))
 ```
 
+## 6. Retrieving Stored Logs for Review
+
+### Locate the Log Files
+- **DeepSeek Logs:**  `/var/log/deepseek/`
+- **Oobabooga Web UI Logs:**  `/workspace/text-generation-webui/logs/`
+- **Rclone Logs (Backup System):**  `~/.config/rclone/rclone.log`
+- **MariaDB Logs:**  `/var/log/mysql.log`
+
+### Using `cat`, `less`, or `tail` to View Logs
+- **View the entire log file:**
+  ```bash
+  cat /var/log/deepseek/deepseek.log
+  ```
+- **Scroll through logs:**
+  ```bash
+  less /var/log/deepseek/deepseek.log
+  ```
+- **View the last 50 lines in real time:**
+  ```bash
+  tail -n 50 -f /var/log/deepseek/deepseek.log
+  ```
+
+### Filter Logs Using `grep`
+- Search for errors:
+  ```bash
+  grep "error" /var/log/deepseek/deepseek.log
+  ```
+- Search for backup status:
+  ```bash
+  grep "backup completed" ~/.config/rclone/rclone.log
+  ```
+
+### Using `journalctl` for Systemd Services
+If DeepSeek runs as a systemd service:
+```bash
+journalctl -u deepseek.service --since "1 hour ago"
+```
+
 ## Conclusion
-Using LoRA and QLoRA, DeepSeek LLM can be fine-tuned efficiently on consumer GPUs, reducing hardware constraints while achieving high-quality outputs.
+Using LoRA and QLoRA, DeepSeek LLM can be fine-tuned efficiently on consumer GPUs, reducing hardware constraints while achieving high-quality outputs. Additionally, logging retrieval methods ensure model fine-tuning monitoring and debugging.
+
 
 
