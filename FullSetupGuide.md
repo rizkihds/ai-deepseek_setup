@@ -1,49 +1,3 @@
-# DeepSeek - System FLOW 🚀
-```
-System Setup - Flow
-     │
-     ├──► Install Proxmox
-     │       ├──► Create Ubuntu VM
-     │       ├──► Install Ubuntu Server
-     │       └──► Configure System (Updates, Drivers, tmux)
-     │
-     ├──► Install Required Software
-     │       ├──► Python, CUDA, PyTorch
-     │       ├──► NVIDIA Drivers (if GPU)
-     │       └──► MariaDB (for logging & analytics)
-     │
-     ├──► DeepSeek LLM Installation
-     │       ├──► Clone Repository
-     │       ├──► Install Dependencies
-     │       └──► Start DeepSeek LLM Server
-     │
-     ├──► Oobabooga Web UI Setup
-     │       ├──► Install Web UI
-     │       ├──► Connect to DeepSeek LLM
-     │       └──► Serve Web UI for User Interaction
-     │
-     ├──► Request Processing Flow
-     │       ├──► User Sends Request (Web UI)
-     │       ├──► DeepSeek LLM Processes Query
-     │       ├──► (Optional) Log Request to MariaDB
-     │       ├──► Generate Response
-     │       └──► Send Response Back to User
-     │
-     ├──► Backup & Recovery
-     │       ├──► Install & Configure `rclone`
-     │       ├──► Connect to Digital Ocean Spaces
-     │       ├──► Sync Model & Data (`/opt/deepseek`)
-     │       ├──► Verify Backup
-     │       └──► Restore from Backup (if needed)
-     │
-     └──► Analytics & Database Storage
-             ├──► Store User Queries in MariaDB
-             ├──► Analyze Query Trends
-             ├──► Optimize Model Based on Data
-             └──► Retrieve Stored Logs for Review
-
-```
-
 # DeepSeek Data Storage & Locations  🔍
 
 * **Installation Directory:**`/home/ubuntu/deepseek/`
@@ -189,27 +143,6 @@ python server.py --model deepseek-llm
 
 ## 6. User Interaction Flow
 
-```
-Client Request
-     │
-     ▼
-Oobabooga Web UI
-     │
-     ▼
-DeepSeek LLM Server
-     │
-     ├──► (Optional) Log request to MariaDB
-     │
-     ▼
-Generate Response
-     │
-     ▼
-Oobabooga Web UI
-     │
-     ▼
-Client Receives Response
-```
-
 ## Oobabooga Web UI Installation
 
 ### Clone Repository
@@ -234,31 +167,6 @@ python server.py --model deepseek-llm
 ## 7. Backup & Recovery Plan
 
 ### Setting Up Backup with `rclone`
-
-```
-Backup Process
-     │
-     ▼
-Install & Configure rclone
-     │
-     ▼
-Setup Digital Ocean Spaces
-     │
-     ▼
-Authenticate & Configure rclone
-     │
-     ▼
-Select Backup Directory (/opt/deepseek)
-     │
-     ▼
-Initiate Backup with rclone sync
-     │
-     ▼
-Data Uploaded to Digital Ocean Spaces
-     │
-     ▼
-Verify Backup Integrity
-```
 
 ### Setting Up Backup with `rclone`
 
